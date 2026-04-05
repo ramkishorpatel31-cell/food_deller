@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickBites | Food Delivery</title>
+    <style>
+        :root {
+            --primary: #ff4757;
+            --dark: #2f3542;
+            --light: #f1f2f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--light);
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            padding: 20px;
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        /* Menu Section */
+        .menu {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .food-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .food-card:hover { transform: translateY(-5px); }
+
+        .food-card h3 { margin: 10px 0; color: var(--dark); }
+
+        .price { color: var(--primary); font-weight: bold; font-size: 1.2rem; }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* Cart Section */
+        .cart-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+        }
+
+        .cart-items {
+            flex-grow: 1;
+            overflow-y: auto;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 10px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .total-section {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1rem;
+            background: #2ed573;
+        }
+
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+            .cart-panel { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>QuickBites Delivery</h1>
+</header>
+
+<div class="container">
+    <div class="menu" id="menu">
+        </div>
+
+    <div class="cart-panel">
+        <h2>Your Cart</h2>
+        <div class="cart-items" id="cart-items">
+            <p style="color: gray;">Cart is empty...</p>
+        </div>
+        <div class="total-section">
+            <p>Delivery: $5.00</p>
+            <p>Total: $<span id="total-price">5.00</span></p>
+        </div>
+        <button class="checkout-btn" onclick="checkout()">Place Order</button>
+    </div>
+</div>
+
+<script>
+    const foodItems = [
+        { id: 1, name: "Classic Burger", price: 12.50 },
+        { id: 2, name: "Margherita Pizza", price: 15.00 },
+        { id: 3, name: "Caesar Salad", price: 9.75 },
+        { id: 4, name: "French Fries", price: 4.50 },
+        { id: 5, name: "Club Sandwich", price: 11.00 },
+        { id: 6, name: "Iced Coffee", price: 3.50 }
+    ];
+
+    let cart = [];
+    const deliveryFee = 5.00;
+
+    // Render Menu
+    const menuContainer = document.getElementById('menu');
+    foodItems.forEach(item => {
+        menuContainer.innerHTML += `
+            <div class="food-card">
+                <h3>${item.name}</h3>
+                <p class="price">$${item.price.toFixed(2)}</p>
+                <button onclick="addToCart(${item.id})">Add to Cart</button>
+            </div>
+        `;
+    });
+
+    function addToCart(id) {
+        const product = foodItems.find(item => item.id === id);
+        cart.push(product);
+        renderCart();
+    }
+
+    function renderCart() {
+        const cartContainer = document.getElementById('cart-items');
+        const totalDisplay = document.getElementById('total-price');
+        
+        if (cart.length === 0) {
+            cartContainer.innerHTML = '<p style="color: gray;">Cart is empty...</p>';
+            totalDisplay.innerText = deliveryFee.toFixed(2);
+            return;
+        }
+
+        cartContainer.innerHTML = '';
+        let subtotal = 0;
+
+        cart.forEach((item, index) => {
+            subtotal += item.price;
+            cartContainer.innerHTML += `
+                <div class="cart-item">
+                    <span>${item.name}</span>
+                    <span>$${item.price.toFixed(2)}</span>
+                </div>
+            `;
+        });
+
+        totalDisplay.innerText = (subtotal + deliveryFee).toFixed(2);
+    }
+
+    function checkout() {
+        if (cart.length === 0) {
+            alert("Please add items to your cart first!");
+        } else {
+            alert("Order successful! Your food is being prepared.");
+            cart = [];
+            renderCart();
+        }
+    }
+</script>
+
+</body>
+</html>
